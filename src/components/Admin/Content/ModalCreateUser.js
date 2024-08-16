@@ -2,12 +2,32 @@ import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { IoIosPersonAdd } from "react-icons/io";
+import axios from "axios"
+import { toast } from 'react-toastify';
 
-const ModalCreateUser = () => {
-  const [show, setShow] = useState(false);
+const ModalCreateUser = (props) => {
+  const {show, setShow} = props; 
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleClose = () => {
+    setShow(false)
+    setEmail("")
+    setUsername("")
+    setPassword("")
+    setRole("USER")
+    setImagePreview("")
+    setImage("")
+
+  };
+
+  const validateEmail = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
+
+  //const handleShow = () => setShow(true);
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -26,11 +46,42 @@ const ModalCreateUser = () => {
     
   }
 
+  const handleSubmitCreateUser = async () => {
+    if(!email){
+      toast.error("Email invalid");
+      return;
+    }
+
+    if(!password){
+      toast.error("Password invalid");
+      return;
+    }
+
+    const formCreate = new FormData();
+    formCreate.append("email", email);
+    formCreate.append("username", username);
+    formCreate.append("password", password);
+    formCreate.append("role", role);
+    formCreate.append("userImage", image);
+    
+    const res = await axios.post("http://localhost:8081/api/v1/participant", formCreate);
+    console.log(res.data);
+
+    if(res.data.EC === 0){
+      toast.success(res.data.EM);
+      handleClose();
+    }
+    
+    if(res.data.EC !== 0){
+      toast.error(res.data.EM);
+    }
+  }
+
   return (
     <>
-      <Button variant="primary" onClick={handleShow}>
+      {/* <Button variant="primary" onClick={handleShow}>
         Add new user
-      </Button>
+      </Button> */}
 
       <Modal show={show} onHide={handleClose} size='xl' backdrop='static' className='modal-add-user'>
         <Modal.Header closeButton>
@@ -81,8 +132,8 @@ const ModalCreateUser = () => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Save Changes
+          <Button variant="primary" onClick={handleSubmitCreateUser}>
+            Save 
           </Button>
         </Modal.Footer>
       </Modal>
