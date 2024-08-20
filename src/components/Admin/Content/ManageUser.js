@@ -49,7 +49,8 @@ const ManageUser = () => {
                 <ModalUpdateUser
                     show={showModalUpdateUser} 
                     setShow={setShowModalUpdateUser}
-                    dataUpdate={dataUpdate}/>
+                    dataUpdate={dataUpdate}
+                    fetchListUsers={fetchListUsers}/>
             </div>
             <ToastContainer
                 position="top-right"

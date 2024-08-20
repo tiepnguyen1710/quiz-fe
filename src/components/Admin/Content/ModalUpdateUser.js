@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { IoIosPersonAdd } from "react-icons/io";
 import { toast } from 'react-toastify';
-import {postCreateUser} from '../../../services/apiService';
+import {postCreateUser, putUpdateUser} from '../../../services/apiService';
 import _ from 'lodash';
 
 const ModalUpdateUser = (props) => {
@@ -65,12 +65,12 @@ const ModalUpdateUser = (props) => {
       return;
     }
 
-    if(!password){
-      toast.error("Password invalid");
-      return;
-    }
+    // if(!password){
+    //   toast.error("Password invalid");
+    //   return;
+    // }
 
-    const data = await postCreateUser(email, username, password, role, image);
+    const data = await putUpdateUser(dataUpdate.id, username, role, image);
     //console.log(data);
 
     if(data && data.EC === 0){
