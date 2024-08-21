@@ -6,11 +6,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import TableUser from "./TableUser";
 import { getAllUsers } from "../../../services/apiService";
 import ModalUpdateUser from "./ModalUpdateUser";
+import ModalDeleteUser from "./ModalDeleteUser";
 const ManageUser = () => {
     const [showModalCreateUser, setShowModalCreateUser] = useState(false);
     const [showModalUpdateUser, setShowModalUpdateUser] = useState(false);
+    const [showModalDeleteUser, setShowModalDeleteUser] = useState(false);
     const [listUsers, setListUsers] = useState([]);
     const [dataUpdate, setDataUpdate] = useState({});
+    const [dataDelete, setDataDelete] = useState({});
 
     useEffect( () => {
         fetchListUsers();
@@ -29,6 +32,12 @@ const ManageUser = () => {
         setDataUpdate(user);
     }
 
+    const handleClickBtnDelete = (user) => {
+        setShowModalDeleteUser(true);
+        //console.log(user);
+        setDataDelete(user);
+    }   
+
     return(
         <div className="manage-user-container">
             <div className="title">
@@ -40,7 +49,8 @@ const ManageUser = () => {
                 </div>
                 <div className="table-users-container">
                     <TableUser  listUsers={listUsers}
-                                handleClickBtnUpdate={handleClickBtnUpdate} />
+                                handleClickBtnUpdate={handleClickBtnUpdate}
+                                handleClickBtnDelete={handleClickBtnDelete} />
                 </div>
                 <ModalCreateUser 
                     show={showModalCreateUser} 
@@ -51,6 +61,12 @@ const ManageUser = () => {
                     setShow={setShowModalUpdateUser}
                     dataUpdate={dataUpdate}
                     fetchListUsers={fetchListUsers}/>
+                <ModalDeleteUser
+                    show={showModalDeleteUser} 
+                    setShow={setShowModalDeleteUser}
+                    dataDelete={dataDelete}
+                    fetchListUsers={fetchListUsers}
+                    />
             </div>
             <ToastContainer
                 position="top-right"
