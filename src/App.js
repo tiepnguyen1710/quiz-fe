@@ -1,9 +1,12 @@
 import { Outlet } from 'react-router-dom';
 import './App.scss';
 import Header from './components/Header/Header';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { increaseCounter, decreaseCounter } from './redux/action/counterAction';
 
 const App = () => {
+  const count = useSelector(state => state.counter.count);
+  const dispatch = useDispatch();
   return (
     <div className='app-container'>
       <div className='header-container'>

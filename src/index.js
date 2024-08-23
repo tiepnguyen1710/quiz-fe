@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { Provider } from 'react-redux';
+import store from './redux/store';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import User from './components/User/User';
@@ -17,20 +19,23 @@ root.render(
   // <React.StrictMode>
   //   <App />
   // </React.StrictMode>
-  <BrowserRouter>
-    <Routes>
-      <Route path='/' element={<App/>} >
-        <Route index element={<Home/>}></Route>
-        <Route path='user' element={<User/>} />
-      </Route>
-      <Route path='admin' element={<Admin/>} >
-        <Route index element={<Dashboard/>}/>
-        <Route path='manage-user' element={<ManageUser/>} />
-      </Route>
-      <Route path='login' element={<Login/>}/>
-      
-    </Routes>
-  </BrowserRouter>
+  <Provider store={store}>
+        <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<App/>} >
+          <Route index element={<Home/>}></Route>
+          <Route path='user' element={<User/>} />
+        </Route>
+        <Route path='admin' element={<Admin/>} >
+          <Route index element={<Dashboard/>}/>
+          <Route path='manage-user' element={<ManageUser/>} />
+        </Route>
+        <Route path='login' element={<Login/>}/>
+        
+      </Routes>
+      </BrowserRouter>
+  </Provider>
+  
 );
 
 // If you want to start measuring performance in your app, pass a function
