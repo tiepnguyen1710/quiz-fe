@@ -1,10 +1,25 @@
 import { useState } from "react";
 import "./Login.scss";
+import { loginPost } from "../../services/apiService";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-
+    const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    const handleBtnLogin = async () => {
+        const data = await loginPost(email, password);
+        if(data && data.EC === 0){
+            toast.success(data.EM);
+            navigate("/");
+        }
+
+        if(data && data.EC !== 0){
+            toast.error(data.EM);
+        }
+    }
     return(
         <div className="login-container">
             <div className="header">
@@ -27,7 +42,7 @@ const Login = () => {
                 </div>
             </div>
             <div className="btn-login col-4 mx-auto">
-                <button>Login</button>
+                <button onClick={handleBtnLogin}>Login</button>
             </div>
         </div>
     )
