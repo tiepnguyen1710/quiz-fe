@@ -15,6 +15,7 @@ const ListQuiz = () => {
 
         if (data && data.EC === 0) {
             setListQuiz(data.DT);
+            //console.log(data.DT);
         }
     }
 
@@ -29,7 +30,7 @@ const ListQuiz = () => {
                                 <div className="card-body">
                                     <h5 className="card-title">{`Quiz ${item.id}`}</h5>
                                     <p className="card-text">{item.description}</p>
-                                    <a className="btn btn-primary" onClick={() => {navigate(`/quiz/${item.id}`)}}>Start</a>
+                                    <a className="btn btn-primary" onClick={() => {navigate(`/quiz/${item.id}`, { state: { quizTitle : item.description} })}}>Start</a>
                                 </div>
                             </div>
                         )
