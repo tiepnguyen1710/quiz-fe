@@ -17,6 +17,7 @@ const DetailQuiz = () => {
         if(currentQuestion < listQuestion.length - 1){
             setCurrentQuestion(currentQuestion + 1);
         }
+        console.log(listQuestion);
         
     }
 
@@ -26,6 +27,7 @@ const DetailQuiz = () => {
         }
         
     }
+
     useEffect(() => {
         fetchListQuestion();
         
@@ -33,32 +35,60 @@ const DetailQuiz = () => {
 
     const fetchListQuestion = async () => {
         const data = await getQuestionByQuizId(quizId);
-        //console.log(data);
-        const raw = data.DT;
-        const res = _.chain(raw)
-        // Group the elements of Array based on `color` property
-        .groupBy("id")
-        // `key` is group's name (color), `value` is the array of objects
-        .map((value, key) => {
-            //console.log("key ", key, "value ", value);
-            let answers = [];
-            let questionDescription , image = null;
-            value.forEach((item, index) => {
-                if(index === 0){
-                    questionDescription = item.description;
-                    image = item.image;
-                }
-                //console.log(item);
-                answers.push(item.answers);
-            })
-            return { idQuestion: key, answers, questionDescription, image }
-        }
-        )
-        .value()
+        if(data && data.EC === 0){
+            //console.log(data);
+            const raw = data.DT;
+            const res = _.chain(raw)
+            // Group the elements of Array based on `color` property
+            .groupBy("id")
+            // `key` is group's name (color), `value` is the array of objects
+            .map((value, key) => {
+                //console.log("key ", key, "value ", value);
+                let answers = [];
+                let questionDescription , image = null;
+                value.forEach((item, index) => {
+                    if(index === 0){
+                        questionDescription = item.description;
+                        image = item.image;
+                    }
+                    item.answers.isChecked = false;
+                    
+                    //console.log(item);
+                    answers.push(item.answers);
+                })
+                return { idQuestion: key, answers, questionDescription, image }
+            }
+            )
+            .value();
 
-        setListQuestion(res);
-        //console.log(res);
+            setListQuestion(res);
+            //console.log(res);
+        }
+        
     }
+
+    const handleCheckBox = (questionId, answerId) => {
+        // console.log(questionId, answerId);
+        let listQuestionClone = _.cloneDeep(listQuestion);
+        // console.log(+questionId, +answerId);
+        let question = listQuestionClone.find(item => +item.idQuestion === +questionId);
+        if(question && question.answers){
+            question.answers = question.answers.map((item) => {
+                if(+item.id === answerId){
+                    item.isChecked = !item.isChecked;
+                }
+                return item;
+            })
+        }
+        const index = listQuestionClone.findIndex(item => +item.idQuestion === +questionId);
+        if(index > -1){
+            listQuestionClone[index] = question;
+            setListQuestion(listQuestionClone);
+        }
+
+        
+    }
+
     return(
         <div className="detail-quiz-container">
             <div className="left-content">
@@ -68,7 +98,7 @@ const DetailQuiz = () => {
                 <div className="q-content">
                     <Question 
                         currentQuestion={listQuestion && listQuestion.length > 0 ? listQuestion[currentQuestion] : []}
-                        
+                        handleCheckBox={handleCheckBox}
                     />
                 </div>
                 <div className="footer">

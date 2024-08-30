@@ -6,6 +6,14 @@ const Question = (props) => {
     if(_.isEmpty(currentQuestion)){
         return(<></>)
     }
+
+    const handleChangeCheckBox = (questionId, answerId ) => {
+        // console.log(currentQuestion);
+        // console.log(+questionId, answerId);
+        props.handleCheckBox(questionId, answerId);
+            
+        
+    }
     return (
         <>
             <>
@@ -26,7 +34,10 @@ const Question = (props) => {
                             
                                 <div key={index} className="a-child">
                                     <div className="form-check">   
-                                        <input type="checkbox" className="form-check-input"/>
+                                        <input type="checkbox" 
+                                        className="form-check-input"
+                                        checked={item.isChecked}
+                                        onChange={(event) => handleChangeCheckBox(currentQuestion.idQuestion, item.id)}/>
                                         <label className="form-check-label">
                                             {item.description}
                                         </label>
