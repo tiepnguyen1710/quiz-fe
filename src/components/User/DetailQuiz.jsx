@@ -17,7 +17,7 @@ const DetailQuiz = () => {
         if(currentQuestion < listQuestion.length - 1){
             setCurrentQuestion(currentQuestion + 1);
         }
-        console.log(listQuestion);
+        
         
     }
 
@@ -26,6 +26,33 @@ const DetailQuiz = () => {
             setCurrentQuestion(currentQuestion - 1);
         }
         
+    }
+
+    const handleSubmit = () => {
+        let payload = {
+            quizId : +quizId,
+            answers : []
+        }
+        let answers = [];
+        console.log(listQuestion);
+
+        listQuestion.forEach(question => {
+            let questionId = +question.idQuestion;
+            let answerId = [];
+            question.answers.forEach(answer => {
+                if(answer.isChecked === true){
+                    answerId.push(+answer.id);
+                }
+            });
+
+            answers.push({
+                questionId : questionId,
+                userAnswerId: answerId
+            });
+        });
+
+        payload.answers = answers;
+        //console.log("data build", payload);
     }
 
     useEffect(() => {
@@ -80,6 +107,7 @@ const DetailQuiz = () => {
                 return item;
             })
         }
+        //console.log(question);
         const index = listQuestionClone.findIndex(item => +item.idQuestion === +questionId);
         if(index > -1){
             listQuestionClone[index] = question;
@@ -104,6 +132,7 @@ const DetailQuiz = () => {
                 <div className="footer">
                     <button className="btn btn-primary" onClick={handlePrev}>Prev</button>
                     <button className="btn btn-secondary" onClick={handleNext}>Next</button>
+                    <button className="btn btn-warning" onClick={handleSubmit}>Submit</button>
                 </div>
             </div>
             <div className="right-content">
