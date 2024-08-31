@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import { getQuestionByQuizId, getQuizByParticipant } from "../../services/apiService";
+import { getQuestionByQuizId, getQuizByParticipant, submitAnswes } from "../../services/apiService";
 import './DetailQuiz.scss'
 import _ from "lodash"
 import Question from "./Question";
+import ModalResult from "./ModalResult";
 
 const DetailQuiz = () => {
     const params = useParams();
     const location = useLocation();
     const quizId = params.id;
-    //console.log(location);
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [listQuestion, setListQuestion] = useState([]);
+    const [showModalResult, setShowModalResult] = useState(false);
+    const [dataModalResult, setDataModalResult] = useState({});
 
     const handleNext = () => {
         if(currentQuestion < listQuestion.length - 1){
@@ -28,13 +30,13 @@ const DetailQuiz = () => {
         
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         let payload = {
             quizId : +quizId,
             answers : []
         }
         let answers = [];
-        console.log(listQuestion);
+        //console.log(listQuestion);
 
         listQuestion.forEach(question => {
             let questionId = +question.idQuestion;
@@ -52,7 +54,13 @@ const DetailQuiz = () => {
         });
 
         payload.answers = answers;
-        //console.log("data build", payload);
+        setShowModalResult(true);
+
+        const res = await submitAnswes(payload);
+        if(res && res.EC === 0){
+            setDataModalResult(res.DT);
+            console.log(dataModalResult);
+        }
     }
 
     useEffect(() => {
@@ -138,6 +146,10 @@ const DetailQuiz = () => {
             <div className="right-content">
 
             </div>
+            <ModalResult
+                show={showModalResult}
+                setShow={setShowModalResult}
+                dataModalResult={dataModalResult}/>
         </div>
     )
 }

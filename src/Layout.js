@@ -19,15 +19,20 @@ const Layout = (props) => {
                     <Route index element={<Home />}></Route>
                     <Route path='user' element={<ListQuiz />} />
                 </Route>
+
                 <Route path='quiz/:id' element={<DetailQuiz/>}/>
+
                 <Route path='admin' element={<Admin />} >
                     <Route index element={<Dashboard />} />
                     <Route path='manage-user' element={<ManageUser />} />
                 </Route>
+
                 <Route path='login' element={<Login />} />
+
                 <Route path='register' element={<Register />} />
 
             </Routes>
+            
             <ToastContainer
                 position="top-right"
                 //autoClose={2000}
