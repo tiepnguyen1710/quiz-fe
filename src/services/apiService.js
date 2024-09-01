@@ -53,6 +53,15 @@ const submitAnswes = (payload) => {
     return axios.post('api/v1/quiz-submit', {...payload});
 }
 
+const postCreateQuiz = (description, name,  type, image) => {
+    const formCreate = new FormData();
+    formCreate.append("description", description);
+    formCreate.append("name", name);
+    formCreate.append("difficulty", type);
+    formCreate.append("quizImage", image);
+    
+    return axios.post("api/v1/quiz", formCreate);
+}
 export { postCreateUser, getAllUsers, putUpdateUser, deleteUser , 
     getAllUsersPaginate, loginPost, registerPost, getQuizByParticipant, 
-    getQuestionByQuizId, submitAnswes};
+    getQuestionByQuizId, submitAnswes, postCreateQuiz};
