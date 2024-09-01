@@ -62,6 +62,11 @@ const postCreateQuiz = (description, name,  type, image) => {
     
     return axios.post("api/v1/quiz", formCreate);
 }
+
+const getAllQuiz = () => {
+    return axios.get('api/v1/quiz/all');
+}
+
 export { postCreateUser, getAllUsers, putUpdateUser, deleteUser , 
     getAllUsersPaginate, loginPost, registerPost, getQuizByParticipant, 
-    getQuestionByQuizId, submitAnswes, postCreateQuiz};
+    getQuestionByQuizId, submitAnswes, postCreateQuiz, getAllQuiz};
