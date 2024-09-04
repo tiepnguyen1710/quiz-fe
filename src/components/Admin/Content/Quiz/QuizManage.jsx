@@ -7,6 +7,7 @@ import TableQuiz from './TableQuiz'
 import Accordion from 'react-bootstrap/Accordion';
 import ModalUpdateQuiz from './ModalUpdateQuiz'
 import { getAllQuiz } from '../../../../services/apiService'
+import ModalDeleteQuiz from './ModalDeleteQuiz'
 
 const options = [
     { value: 'Easy', label: 'Easy' },
@@ -21,6 +22,8 @@ const QuizManage = () => {
     const [image, setImage] = useState(null);
     const [showModalUpdateQuiz, setShowModalUpdateQuiz] = useState(false);
     const [dataUpdate, setDataUpdate] = useState({});
+    const [showModalDeleteQuiz, setShowModalDeleteQuiz] = useState(false);
+    const [dataDelete, setDataDelete] = useState({});
     const [listQuiz, setListQuiz] = useState([]);
 
     useEffect(() => {
@@ -72,6 +75,12 @@ const QuizManage = () => {
         setDataUpdate(quiz)
     }
 
+    const handleBtnDelete = (quiz) => {
+        //console.log(typeof(quizId));
+        setShowModalDeleteQuiz(true);
+        setDataDelete(quiz);
+    }
+
     return (
         <div className="quiz-manage-container">
             {/* <div className="title">
@@ -120,8 +129,15 @@ const QuizManage = () => {
                 </div>
                 <TableQuiz 
                     handleBtnUpdate={handleBtnUpdate}
+                    handleBtnDelete={handleBtnDelete}
                     listQuiz={listQuiz}/>
             </div>
+            <ModalDeleteQuiz
+                show={showModalDeleteQuiz}
+                setShow={setShowModalDeleteQuiz}
+                dataDelete={dataDelete}
+                fetchListQuiz={fetchListQuiz}
+                />
             <ModalUpdateQuiz
                 options={options}
                 show={showModalUpdateQuiz}
@@ -129,6 +145,7 @@ const QuizManage = () => {
                 dataUpdate={dataUpdate}
                 fetchListQuiz={fetchListQuiz}
                 />
+            
         </div>
     )
 }
