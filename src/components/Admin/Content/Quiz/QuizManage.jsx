@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './QuizManage.scss'
 import Select from 'react-select'
 import { postCreateQuiz } from '../../../../services/apiService'
 import { toast } from 'react-toastify'
 import TableQuiz from './TableQuiz'
 import Accordion from 'react-bootstrap/Accordion';
+import ModalUpdateQuiz from './ModalUpdateQuiz'
+import { getAllQuiz } from '../../../../services/apiService'
 
 const options = [
     { value: 'Easy', label: 'Easy' },
@@ -17,6 +19,26 @@ const QuizManage = () => {
     const [description, setDescription] = useState('')
     const [type, setType] = useState('');
     const [image, setImage] = useState(null);
+    const [showModalUpdateQuiz, setShowModalUpdateQuiz] = useState(false);
+    const [dataUpdate, setDataUpdate] = useState({});
+    const [listQuiz, setListQuiz] = useState([]);
+
+    useEffect(() => {
+
+        fetchListQuiz();
+
+    }, []);
+
+    const fetchListQuiz = async () => {
+
+        const res = await getAllQuiz();
+        console.log(res.DT);
+
+        if (res && res.EC === 0) {
+            setListQuiz(res.DT);
+        }
+
+    }
 
     const handleChangeFile = (event) => {
         if (event.target && event.target.files && event.target.files[0]) {
@@ -42,6 +64,12 @@ const QuizManage = () => {
         if (res && res.EC !== 0) {
             toast.error(res.EM);
         }
+    }
+
+    const handleBtnUpdate = (quiz) => {
+        //console.log(quiz);
+        setShowModalUpdateQuiz(true);
+        setDataUpdate(quiz)
     }
 
     return (
@@ -90,8 +118,17 @@ const QuizManage = () => {
                 <div className='table-title'>
                     All Quiz
                 </div>
-                <TableQuiz />
+                <TableQuiz 
+                    handleBtnUpdate={handleBtnUpdate}
+                    listQuiz={listQuiz}/>
             </div>
+            <ModalUpdateQuiz
+                options={options}
+                show={showModalUpdateQuiz}
+                setShow={setShowModalUpdateQuiz}
+                dataUpdate={dataUpdate}
+                fetchListQuiz={fetchListQuiz}
+                />
         </div>
     )
 }
