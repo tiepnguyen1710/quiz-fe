@@ -11,6 +11,7 @@ import Register from './components/Auth/Register';
 import ListQuiz from './components/User/ListQuiz';
 import DetailQuiz from './components/User/DetailQuiz';
 import QuizManage from './components/Admin/Content/Quiz/QuizManage';
+import QuestionsManage from './components/Admin/Content/Questions/QuestionsManage';
 
 const Layout = (props) => {
     return (
@@ -27,6 +28,7 @@ const Layout = (props) => {
                     <Route index element={<Dashboard />} />
                     <Route path='manage-user' element={<ManageUser />} />
                     <Route path='manage-quiz' element={<QuizManage />} />
+                    <Route path='manage-question' element={<QuestionsManage />} />
                 </Route>
 
                 <Route path='login' element={<Login />} />

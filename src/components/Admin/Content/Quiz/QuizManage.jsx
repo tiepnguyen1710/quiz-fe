@@ -62,6 +62,7 @@ const QuizManage = () => {
             setType('');
             setImage(null);
             toast.success(res.EM);
+            fetchListQuiz();
         }
 
         if (res && res.EC !== 0) {
