@@ -4,7 +4,7 @@ import { IoIosAddCircle } from "react-icons/io";
 import { FaMinusCircle } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { getAllQuiz, postCreateAnswerForQuestion, postCreateQuestionForQuiz } from "../../../../services/apiService";
+import { getAllQuiz, getQuizWithQA, postCreateAnswerForQuestion, postCreateQuestionForQuiz } from "../../../../services/apiService";
 import _ from 'lodash'
 import { toast } from 'react-toastify';
 
@@ -34,6 +34,12 @@ const QuizQA = () => {
 
     }, []);
 
+    useEffect(() => {
+        if(selectQuiz && selectQuiz.value)
+            fetchQuizWithQA();
+
+    }, [selectQuiz])
+
     const fetchListQuiz = async () => {
 
         const res = await getAllQuiz();
@@ -44,13 +50,37 @@ const QuizQA = () => {
                 return(
                     {
                         value: quiz.id,
-                        label: quiz.description
+                        label: quiz.name
                     }
                 )
             })
             setListQuiz(newQuiz);
         }
 
+    }
+
+    function urltoFile(url, filename, mimeType){
+        return (fetch(url)
+                .then(function(res){return res.arrayBuffer();})
+                .then(function(buf){return new File([buf], filename, {type:mimeType});})
+        );
+    }
+
+    const fetchQuizWithQA = async () => {
+        const res = await getQuizWithQA(selectQuiz.value);
+        if(res && res.EC === 0){
+            //console.log(res.DT.qa);
+            let newQA = [];
+            for(let i = 0; i < res.DT.qa.length; i++){
+                let q = res.DT.qa[i];
+                if(q.imageFile){
+                    q.imageName = `Question-${q.id}.png`;
+                    q.imageFile = urltoFile(`data:image/png;base64,${q.imageFile}`,  `Question-${q.id}.png`,'image/png')
+                }
+                newQA.push(q);
+            }
+            setQuestions(newQA);
+        }
     }
 
     const handleAddRemoveQuestion = (type, questionId) => {
@@ -271,7 +301,7 @@ const QuizQA = () => {
                                         <div key={ answer.id } className="form-answer">
                                             <input type="checkbox" 
                                             className="form-check-input" 
-                                            value={answer.isCorrect}
+                                            checked={answer.isCorrect}
                                             onChange={(event) => handleOnChangeAnswer('CHECKBOX', question.id, answer.id, event.target.checked)}/>
                                             <div className="form-floating mb-3">
                                                 <input type="text" 

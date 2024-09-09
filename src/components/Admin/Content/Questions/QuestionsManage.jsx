@@ -216,6 +216,9 @@ const QuestionsManage = () => {
                 )
             }
         }
+
+        toast.success('Create Question Succeed');
+        setQuestions(initQuestion);
     }
 
     return (

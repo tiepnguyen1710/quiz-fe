@@ -1,6 +1,7 @@
 import Select from "react-select"
 import { useState, useEffect } from "react";
-import { getAllQuiz, getAllUsers } from "../../../../services/apiService";
+import { getAllQuiz, getAllUsers, postAssignQuiz } from "../../../../services/apiService";
+import { toast } from "react-toastify";
 
 const AssignQuiz = () => {
     const [selectQuiz, setSelectedQuiz] = useState({});
@@ -53,6 +54,19 @@ const AssignQuiz = () => {
 
     }
 
+    const handleBtnAssign = async () => {
+        const res = await postAssignQuiz(selectQuiz.value, selectUser.value);
+        console.log(res);
+
+        if(res && res.EC === 0){
+            toast.success(res.EM);
+        }
+
+        if(res.EC !== 0){
+            toast.error(res.EM);
+        }
+    }
+
 
     return(
         <div className="assign-user-container row">
@@ -67,7 +81,7 @@ const AssignQuiz = () => {
             </div>
 
             <div className="btn-assign mt-3">
-                <button className="btn btn-warning">Assign</button>
+                <button className="btn btn-warning" onClick={() => handleBtnAssign()}>Assign</button>
             </div>
         </div>
     )
