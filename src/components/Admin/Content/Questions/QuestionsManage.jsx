@@ -2,34 +2,56 @@ import Select from "react-select"
 import './QuestionsManage.scss'
 import { IoIosAddCircle } from "react-icons/io";
 import { FaMinusCircle } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
+import { getAllQuiz, postCreateAnswerForQuestion, postCreateQuestionForQuiz } from "../../../../services/apiService";
 import _ from 'lodash'
+import { toast } from 'react-toastify';
 
 const QuestionsManage = () => {
-    const options = [
-        { value: 'EASY', label: 'EASY' },
-        { value: 'NORMAL', label: 'NORMAL' },
-        { value: 'HARD', label: 'HARD' }
+    const initQuestion = [
+        {
+            id: uuidv4(),
+            description: '',
+            imageFile: '',
+            imageName: '',
+            answers: [
+                {
+                    id: uuidv4(),
+                    description: '',
+                    isCorrect: false
+                }
+            ]
+        }
     ]
-    const [selectQuestion, setSelectedQuestion] = useState({});
-    const [questions, setQuestions] = useState(
-        [
-            {
-                id: uuidv4(),
-                description: '',
-                imageFile: '',
-                imageName: '',
-                answers: [
+    const [selectQuiz, setSelectedQuiz] = useState({});
+    const [listQuiz, setListQuiz] = useState([]);
+    const [questions, setQuestions] = useState(initQuestion);
+
+    useEffect(() => {
+
+        fetchListQuiz();
+
+    }, []);
+
+    const fetchListQuiz = async () => {
+
+        const res = await getAllQuiz();
+        //console.log(res.DT);
+
+        if (res && res.EC === 0) {
+            let newQuiz = res.DT.map((quiz) => {
+                return(
                     {
-                        id: uuidv4(),
-                        description: '',
-                        isCorrect: false
+                        value: quiz.id,
+                        label: quiz.description
                     }
-                ]
-            }
-        ]
-    )
+                )
+            })
+            setListQuiz(newQuiz);
+        }
+
+    }
 
     const handleAddRemoveQuestion = (type, questionId) => {
         if(type === 'ADD'){
@@ -83,7 +105,7 @@ const QuestionsManage = () => {
     const handleOnChangeQuestion = (questionId, value) => {
         let questionsClone = _.cloneDeep(questions);
         let index = questionsClone.findIndex(item => item.id === questionId);
-        console.log(questionId);
+        //console.log(questionId);
         if(index > -1){
             questionsClone[index].description = value;
         }
@@ -112,7 +134,7 @@ const QuestionsManage = () => {
                         if(type === 'DESCRIPTION'){
                             //console.log(questionId, answerId, value);
                             answer.description = value;
-                            console.log(answer.description);
+                            //console.log(answer.description);
                         }
                         
                         if(type === 'CHECKBOX'){
@@ -125,8 +147,75 @@ const QuestionsManage = () => {
             setQuestions(questionsClone);
     }
 
-    const handleBtnSubmit = () => {
-        console.log(questions);
+    const handleBtnSubmit = async () => {
+        // await Promise.all(questions.map( async (question) => {
+        //     const q = await postCreateQuestionForQuiz(
+        //         +selectQuiz.value,
+        //         question.description,
+        //         question.imageFile
+        //     );
+        //     await Promise.all(question.answers.map( async (answer) => {
+        //         await postCreateAnswerForQuestion(
+        //             answer.description,
+        //             answer.isCorrect,
+        //             q.DT.id
+        //         )
+        //     })) 
+        // }))
+        if(_.isEmpty(selectQuiz)){
+            toast.error('Please choose a quiz');
+            return;
+        }
+
+        //validate answer
+        let isValidAnswer = true;
+        let indexQ = 0, indexA = 0;
+        for(let i = 0; i < questions.length; i++){
+            for(let j = 0; j < questions[i].answers.length; j++){
+                if(!questions[i].answers[j].description){
+                    isValidAnswer = false;
+                    indexA = j;
+                    break;
+                }
+            }
+            indexQ = i;
+            if(isValidAnswer === false)
+                break;
+        }
+        if(isValidAnswer === false){
+            toast.error(`Please fill out answer ${indexA + 1} of question ${indexQ + 1}`);
+            return;
+        }
+
+        //validate question
+        let isValidQuestion = true;
+        for(let i = 0; i < questions.length; i++){
+            if(!questions[i].description){
+                isValidQuestion = false;
+                indexQ = i;
+                break;
+            }
+        }
+        if(isValidQuestion === false){
+            toast.error(`Please fill out question ${indexQ + 1}`);
+            return;
+        }
+
+
+        for(const question of questions){
+            const q = await postCreateQuestionForQuiz(
+                +selectQuiz.value,
+                question.description,
+                question.imageFile
+            );
+            for(const answer of question.answers){
+                await postCreateAnswerForQuestion(
+                    answer.description,
+                    answer.isCorrect,
+                    q.DT.id
+                )
+            }
+        }
     }
 
     return (
@@ -138,8 +227,8 @@ const QuestionsManage = () => {
                 <div className="label-select">
                     Select Quiz
                 </div>
-                <div className="select-type col-6">
-                    <Select options={options} defaultValue={selectQuestion} onChange={setSelectedQuestion} />
+                <div className="select-type col-6" style={{zIndex : 2}}>
+                    <Select options={listQuiz} defaultValue={selectQuiz} onChange={setSelectedQuiz} />
                 </div>
             </div>
 
@@ -182,7 +271,7 @@ const QuestionsManage = () => {
                             {question.answers && question.answers.length > 0 &&
                                 question.answers.map((answer, index) => {
                                     return (
-                                        <div key={ answer.id} className="form-answer">
+                                        <div key={ answer.id } className="form-answer">
                                             <input type="checkbox" 
                                             className="form-check-input" 
                                             value={answer.isCorrect}
@@ -193,7 +282,7 @@ const QuestionsManage = () => {
                                                         placeholder="" 
                                                         value={answer.description}
                                                         onChange={(event) => {handleOnChangeAnswer('DESCRIPTION', question.id, answer.id, event.target.value)}}/>
-                                                <label for="floatingInput">Answer {index + 1} </label>
+                                                <label for="floatingInput" style={{zIndex : 1}}>Answer {index + 1} </label>
                                             </div>
                                             <div className="add-new">
                                                 <span className="btn-question-add">
