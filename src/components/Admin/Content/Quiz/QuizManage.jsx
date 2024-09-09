@@ -8,6 +8,8 @@ import Accordion from 'react-bootstrap/Accordion';
 import ModalUpdateQuiz from './ModalUpdateQuiz'
 import { getAllQuiz } from '../../../../services/apiService'
 import ModalDeleteQuiz from './ModalDeleteQuiz'
+import QuizQA from './QuizQA'
+import AssignQuiz from './AssignQuiz'
 
 const options = [
     { value: 'Easy', label: 'Easy' },
@@ -88,65 +90,77 @@ const QuizManage = () => {
                 Quiz Manage
             </div> */}
             <div className='acc-add mb-4'>
-            <Accordion defaultActiveKey="0">
-                <Accordion.Item eventKey="0">
-                    <Accordion.Header>Quiz Manage</Accordion.Header>
-                    <Accordion.Body>
-                        <div className="add-new my-3">
-                            <fieldset className='border rounded-3 p-3'>
-                                <legend className='float-none w-auto px-3'>Add new quiz</legend>
-                                <div className="form-floating mb-3 ">
-                                    <input type="text" className="form-control" placeholder=""
-                                        value={name}
-                                        onChange={(event) => setName(event.target.value)} />
-                                    <label >Name</label>
-                                </div>
-                                <div className="form-floating">
-                                    <input type="text" className="form-control" placeholder=""
-                                        value={description}
-                                        onChange={(event) => setDescription(event.target.value)} />
-                                    <label >Description</label>
-                                </div>
-                                <div className='select-quiz mt-3'>
-                                    <Select defaultValue={type} onChange={setType} options={options} />
-                                </div>
-                                <div className='upload-file mt-4'>
-                                    <input type="file" className='form-control' onChange={(event) => handleChangeFile(event)} />
-                                </div>
-                                <div className='btn-save mt-3'>
-                                    <button className='btn btn-primary' onClick={handleBtnSave}>Save</button>
-                                </div>
+                <Accordion defaultActiveKey="0">
+                    <Accordion.Item eventKey="0">
+                        <Accordion.Header>Quiz Manage</Accordion.Header>
+                        <Accordion.Body>
+                            <div className="add-new my-3">
+                                <fieldset className='border rounded-3 p-3'>
+                                    <legend className='float-none w-auto px-3'>Add new quiz</legend>
+                                    <div className="form-floating mb-3 ">
+                                        <input type="text" className="form-control" placeholder=""
+                                            value={name}
+                                            onChange={(event) => setName(event.target.value)} />
+                                        <label >Name</label>
+                                    </div>
+                                    <div className="form-floating">
+                                        <input type="text" className="form-control" placeholder=""
+                                            value={description}
+                                            onChange={(event) => setDescription(event.target.value)} />
+                                        <label >Description</label>
+                                    </div>
+                                    <div className='select-quiz mt-3'>
+                                        <Select defaultValue={type} onChange={setType} options={options} />
+                                    </div>
+                                    <div className='upload-file mt-4'>
+                                        <input type="file" className='form-control' onChange={(event) => handleChangeFile(event)} />
+                                    </div>
+                                    <div className='btn-save mt-3'>
+                                        <button className='btn btn-primary' onClick={handleBtnSave}>Save</button>
+                                    </div>
 
-                            </fieldset>
-                        </div>
-                    </Accordion.Body>
-                </Accordion.Item>
-            </Accordion>
+                                </fieldset>
+                            </div>
+                            <div className="table-quiz">
+                                <div className='table-title'>
+                                    All Quiz
+                                </div>
+                                <TableQuiz
+                                    handleBtnUpdate={handleBtnUpdate}
+                                    handleBtnDelete={handleBtnDelete}
+                                    listQuiz={listQuiz} />
+                            </div>
+                        </Accordion.Body>
+                    </Accordion.Item>
+                    <Accordion.Item eventKey="1">
+                        <Accordion.Header>QA</Accordion.Header>
+                        <Accordion.Body>
+                            <QuizQA/>
+                        </Accordion.Body>
+                    </Accordion.Item>
+                    <Accordion.Item eventKey="2">
+                        <Accordion.Header>Assign user</Accordion.Header>
+                        <Accordion.Body>
+                            <AssignQuiz/>
+                        </Accordion.Body>
+                    </Accordion.Item>
+                </Accordion>
             </div>
-            
-            <div className="table-quiz">
-                <div className='table-title'>
-                    All Quiz
-                </div>
-                <TableQuiz 
-                    handleBtnUpdate={handleBtnUpdate}
-                    handleBtnDelete={handleBtnDelete}
-                    listQuiz={listQuiz}/>
-            </div>
+
             <ModalDeleteQuiz
                 show={showModalDeleteQuiz}
                 setShow={setShowModalDeleteQuiz}
                 dataDelete={dataDelete}
                 fetchListQuiz={fetchListQuiz}
-                />
+            />
             <ModalUpdateQuiz
                 options={options}
                 show={showModalUpdateQuiz}
                 setShow={setShowModalUpdateQuiz}
                 dataUpdate={dataUpdate}
                 fetchListQuiz={fetchListQuiz}
-                />
-            
+            />
+
         </div>
     )
 }
