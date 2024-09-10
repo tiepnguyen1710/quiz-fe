@@ -4,7 +4,7 @@ import { IoIosAddCircle } from "react-icons/io";
 import { FaMinusCircle } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { getAllQuiz, getQuizWithQA, postCreateAnswerForQuestion, postCreateQuestionForQuiz } from "../../../../services/apiService";
+import { getAllQuiz, getQuizWithQA, postCreateAnswerForQuestion, postCreateQuestionForQuiz, postUpSertQA } from "../../../../services/apiService";
 import _ from 'lodash'
 import { toast } from 'react-toastify';
 
@@ -75,7 +75,7 @@ const QuizQA = () => {
                 let q = res.DT.qa[i];
                 if(q.imageFile){
                     q.imageName = `Question-${q.id}.png`;
-                    q.imageFile = urltoFile(`data:image/png;base64,${q.imageFile}`,  `Question-${q.id}.png`,'image/png')
+                    q.imageFile = await urltoFile(`data:image/png;base64,${q.imageFile}`,  `Question-${q.id}.png`,'image/png');
                 }
                 newQA.push(q);
             }
@@ -177,6 +177,13 @@ const QuizQA = () => {
             setQuestions(questionsClone);
     }
 
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+    });
+
     const handleBtnSubmit = async () => {
         // await Promise.all(questions.map( async (question) => {
         //     const q = await postCreateQuestionForQuiz(
@@ -232,21 +239,30 @@ const QuizQA = () => {
         }
 
 
-        for(const question of questions){
-            const q = await postCreateQuestionForQuiz(
-                +selectQuiz.value,
-                question.description,
-                question.imageFile
-            );
-            for(const answer of question.answers){
-                await postCreateAnswerForQuestion(
-                    answer.description,
-                    answer.isCorrect,
-                    q.DT.id
-                )
+        let questionClone = _.cloneDeep(questions);
+        for(let i = 0; i < questionClone.length; i++){
+            if(questionClone[i].imageFile){
+                console.log(typeof(questionClone[i].imageFile))
+                questionClone[i].imageFile = await toBase64(questionClone[i].imageFile);
             }
         }
+
+        console.log("questonCLone", questionClone);
+
+        let res = await postUpSertQA({
+            quizId: selectQuiz.value,
+            questions: questionClone
+
+        });
+
+        if(res && res.EC === 0){
+            toast.success(res.EM);
+            fetchQuizWithQA();
+        }
+        
     }
+
+    console.log('question:', questions)
 
     return (
         <div className="question-answer-container">
