@@ -49,6 +49,13 @@ const Login = () => {
             setIsloading(false);
         }
     }
+
+    const handleEnter = (event) =>{
+        if(event.key === 'Enter'){
+            handleBtnLogin();
+        }
+    }
+
     return(
         <div className="login-container">
             <div className="header">
@@ -67,11 +74,14 @@ const Login = () => {
                 </div>
                 <div className="form-group">
                     <label>Password</label>
-                    <input type="password" className="form-control" value={password} onChange={(event) => setPassword(event.target.value)}></input>
+                    <input type="password" className="form-control" value={password} onChange={(event) => setPassword(event.target.value)}
+                            onKeyDown={(event) => handleEnter(event)}></input>
                 </div>
             </div>
             <div className="btn-login col-4 mx-auto">
-                <button onClick={handleBtnLogin} disabled={isLoading}>
+                <button onClick={handleBtnLogin} 
+                        
+                        disabled={isLoading}>
                     {isLoading && <ImSpinner10 className="loader-icon"/>}<span>Login</span>
                 </button>
             </div>
