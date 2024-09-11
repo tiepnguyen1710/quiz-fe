@@ -148,6 +148,7 @@ const DetailQuiz = () => {
                 <RightContent
                     listQuestion={listQuestion}
                     handleSubmit={handleSubmit}
+                    setCurrentQuestion={setCurrentQuestion}
                 />
             </div>
             <ModalResult

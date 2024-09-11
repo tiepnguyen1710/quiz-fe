@@ -71,6 +71,14 @@
                     color: red;
                     cursor: pointer;
                 }
+
+                &.selected{
+                    background-color: #31de31;
+                }
+
+                &.clicked{
+                    color: red;
+                }
             }
         }
     }
